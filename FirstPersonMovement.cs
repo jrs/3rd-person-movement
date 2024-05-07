@@ -32,8 +32,8 @@ public class FirstPersonMovement : MonoBehaviour
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
-        Vector3 forwardDirection = transform.forward * horizontalInput;
-        Vector3 horizontalDirection = transform.right * verticalInput;
+        Vector3 forwardDirection = transform.forward * verticalInput;
+        Vector3 horizontalDirection = transform.right * horizontalInput;
 
         _moveInput = (forwardDirection + horizontalDirection).normalized;
         _moveInput *= moveSpeed;
@@ -59,8 +59,7 @@ public class FirstPersonMovement : MonoBehaviour
         }
 
         //Player Animations
-        Vector3 movementDirection = new Vector3(horizontalInput, 0, verticalInput);
-        float inputMagnitude = Mathf.Clamp01(movementDirection.magnitude);
+        float inputMagnitude = Mathf.Clamp01(_moveInput.magnitude);
         _playerAnimator.SetFloat("InputMagnitude", inputMagnitude, 0.05f, Time.deltaTime);
         _characterController.Move(_moveInput * Time.deltaTime);
 
