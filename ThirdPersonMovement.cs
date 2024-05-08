@@ -7,6 +7,7 @@ public class ThirdPersonMovement : MonoBehaviour
     [Header("Assigned Components")]
     [SerializeField] private Animator _animator;
     [SerializeField] private CharacterController _characterController;
+    [SerializeField] private Transform _cameraTransform;
 
     [Header("Player Movement Values")]
     public float maximumSpeed;
@@ -43,6 +44,7 @@ public class ThirdPersonMovement : MonoBehaviour
         _animator.SetFloat("InputMagnitude", inputMagnitude, 0.05f, Time.deltaTime);
 
         float speed = inputMagnitude * maximumSpeed;
+        movementDirection = Quaternion.AngleAxis(_cameraTransform.rotation.eulerAngles.y, Vector3.up) * movementDirection;
         movementDirection.Normalize();
 
         _yForce += Physics.gravity.y * Time.deltaTime;
@@ -102,11 +104,15 @@ public class ThirdPersonMovement : MonoBehaviour
         }
     } //end Update
 
-    void OnControllerColliderHit(ControllerColliderHit hit)
+    void OnApplicationFocus(bool hasFocus)
     {
-        if(hit.gameObject.CompareTag("Door"))
+        if(hasFocus)
         {
-            hit.gameObject.GetComponent<Doors>().OpenTheDoor();
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.None;
         }
     }
 }
