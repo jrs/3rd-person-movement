@@ -6,6 +6,8 @@ public class EnemyMovement : MonoBehaviour
 {
     public float speed = 1f;
     public float rangeValue = 5f;
+    private Vector3 _startingPosition;
+    [SerializeField] private bool _isAttacking;
     [SerializeField] private Transform _player;
     [SerializeField] private Animator _enemyAnimation;
     [SerializeField] private Rigidbody _enemyRb;
@@ -13,7 +15,7 @@ public class EnemyMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        _startingPosition = transform.position;
     }
 
     // Update is called once per frame
@@ -22,17 +24,34 @@ public class EnemyMovement : MonoBehaviour
         Vector3 movementDirection = (_player.position - transform.position).normalized;
         
         float distance = Vector3.Distance(_player.position, transform.position);
-        Debug.Log("Distance " + distance);
-        if(distance < rangeValue)
+        //Debug.Log("Distance" + distance);
+        if(!_isAttacking)
         {
-            _enemyRb.velocity = movementDirection * speed;
-            transform.LookAt(_player);
-            _enemyAnimation.SetBool("IsMoving", true);
-        }
-        else
-        {
-            _enemyAnimation.SetBool("IsMoving", false);
-            _enemyRb.velocity = movementDirection * 0;
+            if(distance < rangeValue)
+            {
+                _enemyRb.velocity = movementDirection * speed;
+                transform.LookAt(_player);
+                _enemyAnimation.SetBool("IsMoving", true);
+            }
+            else
+            {
+                //_enemyRb.velocity = movementDirection * 0;
+                _enemyAnimation.SetBool("IsMoving", false);
+            }
         }
     }// end Update
+
+    public void EnemyAttack()
+    {
+        _isAttacking = true;
+        _enemyAnimation.SetBool("IsMoving", false);
+        _enemyAnimation.SetTrigger("IsAttacking");
+        StartCoroutine("EnemyAttackCoolDown");
+    }
+
+    IEnumerator EnemyAttackCoolDown()
+    {
+        yield return new WaitForSeconds(1.5f);
+        _isAttacking = false;
+    }
 }
